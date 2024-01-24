@@ -47,7 +47,7 @@ with app.app_context():
     db.create_all()
     default_user = User.query.filter_by(id=0).first()
     if not default_user:
-        new_user = User(id=0, username='Viera', password='124551', mac_address='123', is_banned=False)
+        new_user = User(id=0, username='Admin', password='124551', mac_address='mac_address', is_banned=False)
         db.session.add(new_user)
         db.session.commit()
 
