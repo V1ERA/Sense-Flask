@@ -7,12 +7,7 @@ import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '124551'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mssql+pyodbc:///?odbc_connect=' + \
-                                        'DRIVER={ODBC Driver 17 for SQL Server};' + \
-                                        'SERVER=database,1433;' + \
-                                        'DATABASE=myDB;' + \
-                                        'UID=sa;' + \
-                                        'PWD=KuBC1yDNp8IGYttxhS77tbBM'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
