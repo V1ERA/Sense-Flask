@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
+    <title>Register Page</title>
+    
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        form {
+            max-width: 400px;
+            padding: 20px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background-color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        input[type="text"],
+        input[type="rpassword"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            display: inline-block;
+            border: 1px solid #555;
+            box-sizing: border-box;
+            background-color: #444;
+            color: #ffffff;
+            border-radius: 4px;
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            display: inline-block;
+            border: 1px solid #555;
+            box-sizing: border-box;
+            background-color: #444;
+            color: #ffffff;
+            border-radius: 4px;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <form action="/register" method="post">
+        <label for="rusername"><i class="fa fa-user"></i> Username</label>
+        <input type="text" name="rusername" required>
+
+        <label for="remail"><i class="fa-solid fa-envelope"></i> Email</label>
+        <input type="email" name="remail" required>
+
+        <label for="rpassword"><i class="fa-solid fa-lock"></i> Password</label>
+        <input type="rpassword" name="rpassword" required>
+
+        <input type="submit" value="Register">
+    </form>
+</body>
+</html>

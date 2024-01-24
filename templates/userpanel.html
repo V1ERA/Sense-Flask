@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <title>User Panel</title>
 
     <style>
@@ -29,31 +30,57 @@
             background-color: #555;
         }
 
-        #btn {
-            background-color: #161616;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
+        /* Profile Picture Styling */
+        #profile-picture-container {
+            text-align: center;
+            margin-bottom: 20px;
         }
+
+        #profile-picture {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 50%;
+        }
+
+        /* File Input and Button Styling */
+        #file-input-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
     </style>
+
 </head>
 <body>
-
     <div id="user-info">
         <h2>User Information</h2>
         <p><i class="fa fa-user"></i> <strong>Username:</strong> {{ user.username }}</p>
+        <p><i class="fa-solid fa-envelope"></i> <strong>Email:</strong> {{ user.email }}</p>
         <p><i class="fas fa-desktop"></i> <strong>Mac Address:</strong> {{ user.mac_address }}</p>
+        <p><i class="fa fa-key"></i> <strong>User Role:</strong> {{ user.role }}</p>
     </div>
 
     <div id="settings">
-        <h2>Settings</h2>
+        <h2>Settings</h4>
 
-        <button id="btn" onclick="Logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        <button id="btn" onclick="Discord()"><i class="fab fa-discord"></i> Discord</button>
-        <button id="btn" onclick="Download()"><i class="fas fa-download"></i> Download</button>
+        <div id="profile-picture-container">
+            <img id="profile-picture" src="{{ url_for('static', filename='avatars/' + user.profile_picture) }}" alt="Profile Picture">
+        </div>
+
+        <div id="file-input-container">
+            <form action="/userpanel" method="post" enctype="multipart/form-data">
+                
+                <input type="file" hidden name="pfp" accept=".jpg, .jpeg, .png" id="upload-image">
+                <label class="btn btn-dark" for="upload-image"><i class="fa-solid fa-upload"></i>
+                    Choose File
+                </label>
+                <button type="submit" class="btn btn-dark"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+            </form>
+        </div>
+        <button class="btn btn-dark" onclick="Logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        <button class="btn btn-dark" onclick="Discord()"><i class="fab fa-discord"></i> Discord</button>
+        <button class="btn btn-dark" onclick="User_List()"><i class="fa-solid fa-users"></i> User List</button>
+        <button class="btn btn-dark" onclick="Download()"><i class="fas fa-download"></i> Download</button>
     </div>
 
     <script>
@@ -64,10 +91,20 @@
         function Discord() {
             window.location.href = "https://discord.gg/gg8W2uFSqb";
         }
+        function User_List() {
+            window.location.href = "/all_users";
+        }
         function Download() {
             window.location.href = "/download";
         }
+    
+        document.getElementById('upload-button').addEventListener('click', function() {
+            document.getElementById('upload-form').submit();
+        });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+
 
 </body>
 </html>

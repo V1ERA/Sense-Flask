@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <title>User List</title>
+
+    <style>
+        body {
+            background-color: #343a40;
+            color: #fff;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .user-container {
+            max-width: 800px;
+            margin: auto;
+            margin-top: 50px;
+        }
+
+        .user-card {
+            background-color: #454d55;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-card img {
+            border-radius: 50%;
+            margin-right: 20px;
+        }
+
+        .user-card h4 {
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .user-card p {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container user-container">
+    <h2 class="text-center">All Users</h2>
+
+    {% for user in users %}
+        <div class="user-card">
+            <img src="{{ url_for('static', filename='avatars/' + user.profile_picture) }}" alt="Profile Picture" width="50" height="50">
+            <div>
+                <h4><a href="{{ url_for('user_profile', user_id=user.id) }}" style="text-decoration: none; color: inherit;">{{ user.username }}</a></h4>
+                <p>UID: {{ user.id }}</p>
+                <p>Role: {{ user.role }}</p>
+            </div>
+        </div>
+    {% endfor %}
+
+</div>
+
+</body>
+</html>

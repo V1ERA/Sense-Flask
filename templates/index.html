@@ -9,10 +9,10 @@
 
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            margin: 20px;
-            background-color: #1a1a1a;
-            color: #ffffff;
+            font-family: Arial, sans-serif;
+            background-color: #333;
+            color: #fff;
+            transition: background-color 0.5s, color 0.5s;
         }
 
         h1 {
@@ -43,7 +43,9 @@
         }
 
         input[type="text"],
-        input[type="password"] {
+        input[type="password"],
+        input[type="email"]
+        {
             width: 10%;
             padding: 10px;
             margin: 5px 0;
@@ -76,22 +78,36 @@
     <table>
         <tr>
             <th>Username</th>
+            <th>email</th>
             <th>Password</th>
             <th>MAC Address</th>
             <th>Status</th>
+            <th>Role</th>
             <th>Actions</th>
         </tr>
         {% for user in users %}
         <tr>
             <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
             <td>{{ user.password }}</td>
             <td>{{ user.mac_address }}</td>
             <td>
-                {% if user.role == 'banned' %}
+                {% if user.role == 'Banned' %}
                 <span style="color: #f44336;">Banned</span>
                 {% else %}
                 <span style="color: #4CAF50;">Active</span>
                 {% endif %}
+            </td>
+            <td>
+                <form action="{{ url_for('set_role', username=user.username) }}" method="post">
+                    <select name="role" id="role">
+                        <option value="Newbie" {% if user.role == 'Newbie' %}selected{% endif %}>Newbie</option>
+                        <option value="User" {% if user.role == 'User' %}selected{% endif %}>User</option>
+                        <option value="Administrator" {% if user.role == 'Administrator' %}selected{% endif %}>Admin</option>
+                        <option value="Banned" {% if user.role == 'Banned' %}selected{% endif %}>Banned</option>
+                    </select>
+                    <input type="submit" value="Set Role">
+                </form>
             </td>
             <td>
                 <form action="{{ url_for('edit_user', username=user.username) }}" method="get">
@@ -117,6 +133,9 @@
     <form action="{{ url_for('add_user') }}" method="post">
         <label for="username"></label>
         <input type="text" name="username" placeholder="Username" required><br>
+
+        <label for="email"></label>
+        <input type="email" name="email" placeholder="Email" required><br>
 
         <label for="password"></label>
         <input type="password" name="password" placeholder="Password" required><br>
