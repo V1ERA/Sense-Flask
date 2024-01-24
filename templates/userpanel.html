@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
+    <title>User Panel</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #333;
+            color: #fff;
+            transition: background-color 0.5s, color 0.5s;
+        }
+
+        #user-info,
+        #settings {
+            margin: 20px;
+            padding: 20px;
+            background-color: #444;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+
+        #settings {
+            background-color: #555;
+        }
+
+        #btn {
+            background-color: #161616;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="user-info">
+        <h2>User Information</h2>
+        <p><i class="fa fa-user"></i> <strong>Username:</strong> {{ user.username }}</p>
+        <p><i class="fas fa-desktop"></i> <strong>Mac Address:</strong> {{ user.mac_address }}</p>
+    </div>
+
+    <div id="settings">
+        <h2>Settings</h2>
+
+        <button id="btn" onclick="Logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        <button id="btn" onclick="Discord()"><i class="fab fa-discord"></i> Discord</button>
+        <button id="btn" onclick="Download()"><i class="fas fa-download"></i> Download</button>
+    </div>
+
+    <script>
+        function Logout() {
+            window.location.href = "/logout";
+            console.log("Logged out")
+        }
+        function Discord() {
+            window.location.href = "https://discord.gg/gg8W2uFSqb";
+        }
+        function Download() {
+            window.location.href = "/download";
+        }
+    </script>
+
+</body>
+</html>

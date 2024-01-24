@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
+    <title>Admin Panel</title>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #555;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #333;
+            color: #ffffff;
+        }
+
+        form {
+            display: inline;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 10%;
+            padding: 10px;
+            margin: 5px 0;
+            display: inline-block;
+            border: 1px solid #333;
+            background-color: #444;
+            color: #fff;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <h1><i class="fa fa-user"></i> User Management</h1>
+
+    <table>
+        <tr>
+            <th>Username</th>
+            <th>Password</th>
+            <th>MAC Address</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.username }}</td>
+            <td>{{ user.password }}</td>
+            <td>{{ user.mac_address }}</td>
+            <td>
+                {% if user.role == 'banned' %}
+                <span style="color: #f44336;">Banned</span>
+                {% else %}
+                <span style="color: #4CAF50;">Active</span>
+                {% endif %}
+            </td>
+            <td>
+                <form action="{{ url_for('edit_user', username=user.username) }}" method="get">
+                    <input type="submit" value="Edit">
+                </form>
+                <form action="{{ url_for('remove_user', username=user.username) }}" method="get">
+                    <input type="submit" value="Remove">
+                </form>
+                {% if user.role == 'banned' %}
+                <form action="{{ url_for('unban_user', username=user.username) }}" method="post">
+                    <input type="submit" value="Unban">
+                </form>
+                {% else %}
+                <form action="{{ url_for('ban_user', username=user.username) }}" method="post">
+                    <input type="submit" value="Ban">
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <form action="{{ url_for('add_user') }}" method="post">
+        <label for="username"></label>
+        <input type="text" name="username" placeholder="Username" required><br>
+
+        <label for="password"></label>
+        <input type="password" name="password" placeholder="Password" required><br>
+
+        <label for="mac_address"></label>
+        <input type="text" name="mac_address" placeholder="MAC Address" required><br>
+
+        <input type="submit" value="Add User">
+    </form>
+</body>
+
+</html>

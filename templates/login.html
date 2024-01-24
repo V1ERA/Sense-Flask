@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
+    <title>Login Page</title>
+    
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a; /* Dark background color */
+            color: #ffffff; /* Light text color */
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        form {
+            max-width: 400px;
+            padding: 20px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background-color: #333; /* Dark form background color */
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffffff; /* Light label text color */
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            display: inline-block;
+            border: 1px solid #555;
+            box-sizing: border-box;
+            background-color: #444; /* Dark input background color */
+            color: #ffffff; /* Light input text color */
+            border-radius: 4px;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <form action="/login" method="post">
+        <label for="username"><i class="fa fa-user"></i> Username</label>
+        <input type="text" name="username" required>
+
+        <label for="password"><i class="fa-solid fa-lock"></i> Password</label>
+        <input type="password" name="password" required>
+
+        <input type="submit" value="Login">
+    </form>
+</body>
+</html>
