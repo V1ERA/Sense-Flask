@@ -8,6 +8,7 @@ from werkzeug.utils import secure_filename
 import datetime
 import os
 
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '124551'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
@@ -30,6 +31,8 @@ class User(db.Model):
     role = db.Column(db.String(20), default='User')
     is_banned = db.Column(db.Boolean, default=False)
     profile_picture = db.Column(db.String(255), default='default.png')
+    register_date = db.Column(db.DateTime, default=datetime.datetime.now)
+    last_online = db.Column(db.DateTime)
 
     def is_authenticated(self):
         return True
@@ -42,6 +45,16 @@ class User(db.Model):
 
     def get_id(self):
         return str(self.id)
+    
+    @property
+    def last_online_formatted(self):
+        if self.last_online:
+            return self.last_online.strftime('%Y/%m/%d %H:%M')
+        
+    @property
+    def register_date_formatted(self):
+        if self.register_date:
+            return self.register_date.strftime('%Y/%m/%d %H:%M')
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -56,10 +69,11 @@ start_time = datetime.datetime.now()
 
 with app.app_context():
     db.create_all()
-    default_user = User.query.filter_by(id=0).first()
-    if not default_user:
-        new_user = User(id=0, username='Admin', email='v1era@proton.me', password='124551', mac_address='2b:57:ae:5d:ba:74', role='Administrator', is_banned=False, profile_picture='default.png')
-        db.session.add(new_user)
+
+@app.before_request
+def update_last_online():
+    if current_user.is_authenticated:
+        current_user.last_online = datetime.datetime.now()
         db.session.commit()
 
 @app.route('/')
@@ -126,7 +140,7 @@ def register():
         if existing_user or existing_email:
             return render_template('register.html', error="Already taken")
         
-        new_user = User(username=rusername, email=remail, password=rpassword, mac_address='Ask admin to set it for you.', role='Newbie', is_banned=False, profile_picture='default.png')
+        new_user = User(username=rusername, email=remail, password=rpassword, mac_address='Ask admin to set it for you.', role='Registered', register_date=datetime.datetime.now(), last_online=datetime.datetime.now(), is_banned=False, profile_picture='default.png')
 
         db.session.add(new_user)
 
@@ -201,11 +215,11 @@ def loginme():
         if user.is_banned:
             return jsonify({"success": False, "message": "User is banned"})
         elif user.password == password and user.mac_address == provided_mac_address:
-            if user.role != 'Newbie':
+            if user.role != 'Registered':
                 login_user(user)
                 return jsonify({"success": True, "message": "Login successful"})
             else:
-                return jsonify({"success": False, "message": "User role is 'Newbie'. Cannot login."})
+                return jsonify({"success": False, "message": "User role is 'Registered'. Cannot login."})
         else:
             return jsonify({"success": False, "message": "Invalid credentials"})
     else:
@@ -228,7 +242,7 @@ def add_user():
     password = request.form['password']
     mac_address = request.form['mac_address']
 
-    new_user = User(username=username, email=email, password=password, mac_address=mac_address, user_profile='default.png')
+    new_user = User(username=username, email=email, password=password, mac_address=mac_address, register_date=datetime.datetime.now() ,last_online=datetime.datetime.now(), profile_picture='default.png')
     db.session.add(new_user)
 
     try:
@@ -293,7 +307,7 @@ def status():
     uptime = datetime.datetime.now() - start_time
     return render_template('status.html', uptime=uptime, user=current_user)
 
-@app.route('/all_users')
+@app.route('/users')
 @login_required
 def all_users():
     if current_user.role == 'Banned':
@@ -301,6 +315,20 @@ def all_users():
     
     users = User.query.all()
     return render_template('user_list.html', users=users)
+
+@app.route('/login_as_user/<int:user_id>', methods=['POST'])
+@login_required
+def login_as_user(user_id):
+    if current_user.role != 'Administrator':
+        return render_template('userpanel.html', user=current_user)
+
+    user = User.query.get(user_id)
+    if user:
+        login_user(user)
+
+    flash('User not found.')
+    return redirect(url_for('index'))
+
 
 @app.errorhandler(404)
 def page_not_found(error):
