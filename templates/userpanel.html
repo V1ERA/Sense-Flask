@@ -1,3 +1,13 @@
+<script>
+    console.log(`%c
+    ██╗   ██╗██╗███████╗██████╗  █████╗ 
+    ██║   ██║██║██╔════╝██╔══██╗██╔══██╗
+    ██║   ██║██║█████╗  ██████╔╝███████║
+    ╚██╗ ██╔╝██║██╔══╝  ██╔══██╗██╔══██║
+     ╚████╔╝ ██║███████╗██║  ██║██║  ██║
+      ╚═══╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝
+    `, "background: -webkit-linear-gradient(left, black, gray, white, gray, black); -webkit-background-clip: text; -webkit-text-fill-color: transparent;");
+</script>  
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,7 +40,6 @@
             background-color: #555;
         }
 
-        /* Profile Picture Styling */
         #profile-picture-container {
             text-align: center;
             margin-bottom: 20px;
@@ -42,7 +51,6 @@
             border-radius: 50%;
         }
 
-        /* File Input and Button Styling */
         #file-input-container {
             margin-top: 20px;
             text-align: center;
@@ -51,7 +59,7 @@
     </style>
 
 </head>
-<body>
+<body> 
     <div id="user-info">
         <h2>User Information</h2>
         <p><i class="fa fa-user"></i> <strong>Username:</strong> {{ user.username }}</p>
@@ -92,7 +100,7 @@
             window.location.href = "https://discord.gg/gg8W2uFSqb";
         }
         function User_List() {
-            window.location.href = "/all_users";
+            window.location.href = "/users";
         }
         function Download() {
             window.location.href = "/download";

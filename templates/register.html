@@ -1,3 +1,13 @@
+<script>
+    console.log(`%c
+    ██╗   ██╗██╗███████╗██████╗  █████╗ 
+    ██║   ██║██║██╔════╝██╔══██╗██╔══██╗
+    ██║   ██║██║█████╗  ██████╔╝███████║
+    ╚██╗ ██╔╝██║██╔══╝  ██╔══██╗██╔══██║
+     ╚████╔╝ ██║███████╗██║  ██║██║  ██║
+      ╚═══╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝
+    `, "background: -webkit-linear-gradient(left, black, gray, white, gray, black); -webkit-background-clip: text; -webkit-text-fill-color: transparent;");
+</script>  
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,8 +44,15 @@
             color: #ffffff;
         }
 
+        a {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
         input[type="text"],
-        input[type="rpassword"] {
+        input[type="password"] {
             width: 100%;
             padding: 12px;
             margin-bottom: 16px;
@@ -78,15 +95,17 @@
 <body>
     <form action="/register" method="post">
         
-        <label for="remail"><i class="fa-solid fa-envelope"></i> Email</label>
-        <input type="email" name="remail" required>
+        <label for="email"><i class="fa-solid fa-envelope"></i> Email</label>
+        <input type="email" name="email" required>
 
-        <label for="rusername"><i class="fa fa-user"></i> Username</label>
-        <input type="text" name="rusername" required>
+        <label for="username"><i class="fa fa-user"></i> Username</label>
+        <input type="text" name="username" required>
 
 
-        <label for="rpassword"><i class="fa-solid fa-lock"></i> Password</label>
-        <input type="rpassword" name="rpassword" required>
+        <label for="password"><i class="fa-solid fa-lock"></i> Password</label>
+        <input type="password" name="password" required>
+
+        <a href="login" class="">Already have an account?</a>
 
         <input type="submit" value="Register">
     </form>

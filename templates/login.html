@@ -1,9 +1,20 @@
+<script>
+    console.log(`%c
+    ██╗   ██╗██╗███████╗██████╗  █████╗ 
+    ██║   ██║██║██╔════╝██╔══██╗██╔══██╗
+    ██║   ██║██║█████╗  ██████╔╝███████║
+    ╚██╗ ██╔╝██║██╔══╝  ██╔══██╗██╔══██║
+     ╚████╔╝ ██║███████╗██║  ██║██║  ██║
+      ╚═══╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝
+    `, "background: -webkit-linear-gradient(left, black, gray, white, gray, black); -webkit-background-clip: text; -webkit-text-fill-color: transparent;");
+</script>  
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <title>Login Page</title>
     
     <style>
@@ -11,8 +22,8 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #1a1a1a; /* Dark background color */
-            color: #ffffff; /* Light text color */
+            background-color: #1a1a1a;
+            color: #ffffff;
             text-align: center;
             display: flex;
             align-items: center;
@@ -25,13 +36,20 @@
             padding: 20px;
             border: 1px solid #444;
             border-radius: 8px;
-            background-color: #333; /* Dark form background color */
+            background-color: #333;
         }
 
         label {
             display: block;
             margin-bottom: 8px;
-            color: #ffffff; /* Light label text color */
+            color: #ffffff;
+        }
+
+        a {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffffff;
+            text-decoration: none;
         }
 
         input[type="text"],
@@ -42,8 +60,8 @@
             display: inline-block;
             border: 1px solid #555;
             box-sizing: border-box;
-            background-color: #444; /* Dark input background color */
-            color: #ffffff; /* Light input text color */
+            background-color: #444;
+            color: #ffffff;
             border-radius: 4px;
         }
 
@@ -64,13 +82,19 @@
 </head>
 <body>
     <form action="/login" method="post">
+        {% if error %}
+        <p style="color: red;">{{ error }}</p>
+        {% endif %}
         <label for="username"><i class="fa fa-user"></i> Username</label>
         <input type="text" name="username" required>
 
         <label for="password"><i class="fa-solid fa-lock"></i> Password</label>
         <input type="password" name="password" required>
 
+        <a href="register" class="">Need an account?</a>
+
         <input type="submit" value="Login">
     </form>
 </body>
 </html>
+

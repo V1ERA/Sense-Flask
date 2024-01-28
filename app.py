@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, send_file, flash
+from flask import Flask, render_template, request, redirect, url_for, jsonify, send_file, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
@@ -7,7 +7,7 @@ from flask_limiter.util import get_remote_address
 from werkzeug.utils import secure_filename
 import datetime
 import os
-
+import bcrypt
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '124551'
@@ -55,6 +55,13 @@ class User(db.Model):
     def register_date_formatted(self):
         if self.register_date:
             return self.register_date.strftime('%Y/%m/%d %H:%M')
+
+
+    def set_password(self, password):
+        self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+    def check_password(self, password):
+        return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -128,19 +135,20 @@ def user_profile(user_id):
     return render_template('users.html', user=viewed_user, current_user=current_user)
 
 @app.route('/register', methods=['POST', 'GET'])
-@limiter.limit("3 per day")
+@limiter.limit("5 per minutes")
 def register():
     if request.method == 'POST':
-        rusername = request.form['rusername']
-        remail = request.form['remail']
-        rpassword = request.form['rpassword']
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
 
-        existing_user = User.query.filter_by(username=rusername).first()
-        existing_email = User.query.filter_by(email=remail).first()
+        existing_user = User.query.filter_by(username=username).first()
+        existing_email = User.query.filter_by(email=email).first()
         if existing_user or existing_email:
             return render_template('register.html', error="Already taken")
-        
-        new_user = User(username=rusername, email=remail, password=rpassword, mac_address='Ask admin to set it for you.', role='Registered', register_date=datetime.datetime.now(), last_online=datetime.datetime.now(), is_banned=False, profile_picture='default.png')
+
+        new_user = User(username=username, email=email, mac_address='Ask admin to set it for you.', role='Registered', register_date=datetime.datetime.now(), last_online=datetime.datetime.now(), is_banned=False, profile_picture='default.png')
+        new_user.set_password(password)
 
         db.session.add(new_user)
 
@@ -155,26 +163,38 @@ def register():
     return render_template('register.html')
 
 @app.route('/login', methods=['POST', 'GET'])
-@limiter.limit("3 per day")
+@limiter.limit("5 per minute")
 def login():
+    error = None
+
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        user = User.query.filter_by(username=username, password=password).first()
+        user = User.query.filter_by(username=username).first()
 
-        if user:
+        if user and user.check_password(password):
             if user.is_banned:
-                return render_template('banned.html')
-
-            login_user(user)
-
-            if user.role == 'Administrator':
-                return redirect(url_for('index'))
+                error = "Your account has been banned."
             else:
                 login_user(user)
-                return redirect(url_for('userpanel'))
+                if user.role == 'Administrator':
+                    return redirect(url_for('index'))
+                else:
+                    return redirect(url_for('userpanel'))
+        else:
+            # Increment failed login attempt count in session
+            session.setdefault('login_attempts', 0)
+            session['login_attempts'] += 1
 
-    return render_template('login.html')
+            # Check if max login attempts exceeded
+            max_attempts = 5
+            if session['login_attempts'] >= max_attempts:
+                # Implement account lockout mechanism here
+                error = "Maximum login attempts exceeded."
+            else:
+                error = "Invalid username or password."
+
+    return render_template('login.html', error=error)
 
 @app.route('/ban_user/<username>', methods=['POST'])
 @login_required
@@ -243,6 +263,7 @@ def add_user():
     mac_address = request.form['mac_address']
 
     new_user = User(username=username, email=email, password=password, mac_address=mac_address, register_date=datetime.datetime.now() ,last_online=datetime.datetime.now(), profile_picture='default.png')
+    new_user.set_password(password)
     db.session.add(new_user)
 
     try:
@@ -278,7 +299,6 @@ def edit_user(username):
         if user:
             user.password = request.form['password']
             user.mac_address = request.form['mac_address']
-
             db.session.commit()
             return redirect(url_for('index'))
 
@@ -349,7 +369,7 @@ def version():
     })
 
 @app.route('/download')
-@limiter.limit("3 per day")
+@limiter.limit("3 per minutes")
 def download():
     file_path = os.path.join('dl', 'Sense.exe')
     return send_file(file_path, as_attachment=True)

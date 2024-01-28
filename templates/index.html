@@ -1,3 +1,13 @@
+<script>
+    console.log(`%c
+    ██╗   ██╗██╗███████╗██████╗  █████╗ 
+    ██║   ██║██║██╔════╝██╔══██╗██╔══██╗
+    ██║   ██║██║█████╗  ██████╔╝███████║
+    ╚██╗ ██╔╝██║██╔══╝  ██╔══██╗██╔══██║
+     ╚████╔╝ ██║███████╗██║  ██║██║  ██║
+      ╚═══╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝
+    `, "background: -webkit-linear-gradient(left, black, gray, white, gray, black); -webkit-background-clip: text; -webkit-text-fill-color: transparent;");
+</script>  
 <!DOCTYPE html>
 <html lang="en">
 
@@ -65,7 +75,6 @@
             <th>UID</th>
             <th>Username</th>
             <th>Email</th>
-            <th>Password</th>
             <th>MAC Address</th>
             <th>Status</th>
             <th>Role</th>
@@ -76,7 +85,6 @@
             <td>{{ user.id }}</td>
             <td>{{ user.username }}</td>
             <td>{{ user.email }}</td>
-            <td>{{ user.password }}</td>
             <td>{{ user.mac_address }}</td>
             <td>
                 {% if user.role == 'Banned' %}
@@ -92,7 +100,6 @@
                             <option value="Administrator" {% if user.role == 'Administrator' %}selected{% endif %}>Admin</option>
                             <option value="User" {% if user.role == 'User' %}selected{% endif %}>User</option>
                             <option value="Registered" {% if user.role == 'Registered' %}selected{% endif %}>Registered</option>
-                            <option value="Banned" {% if user.role == 'Banned' %}selected{% endif %}>Banned</option>
                         </select>
                         <button type="submit" class="btn btn-primary">Set</button>
                     </div>
@@ -100,25 +107,25 @@
             </td>
             
             <td>
-                <div class="btn-group" role="group" aria-label="Actions"></div>
-                <form action="{{ url_for('edit_user', username=user.username) }}" method="get">
+                <div class="btn-group" role="group" aria-label="Basic example">
+                <form class="btn-group" action="{{ url_for('edit_user', username=user.username) }}" method="get">
                     <button type="submit" class="btn btn-primary">Edit</button>
                 </form>
-                <form action="{{ url_for('user_profile', user_id=user.id) }}">
+                <form class="btn-group" action="{{ url_for('user_profile', user_id=user.id) }}">
                     <button type="submit" class="btn btn-primary">Profile</button>
                 </form>
-                <form action="{{ url_for('login_as_user', user_id=user.id) }}" method="post">
+                <form class="btn-group" action="{{ url_for('login_as_user', user_id=user.id) }}" method="post">
                     <button type="submit" class="btn btn-primary">Login as</button>
                 </form>
-                <form action="{{ url_for('remove_user', username=user.username) }}" method="get">
+                <form class="btn-group" action="{{ url_for('remove_user', username=user.username) }}" method="get">
                     <button type="submit" class="btn btn-primary">Remove</button>
                 </form>
                 {% if user.role == 'Banned' %}
-                <form action="{{ url_for('unban_user', username=user.username) }}" method="post">
+                <form class="btn-group" action="{{ url_for('unban_user', username=user.username) }}" method="post">
                     <button type="submit" class="btn btn-primary">Unban</button>
                 </form>
                 {% else %}
-                <form action="{{ url_for('ban_user', username=user.username) }}" method="post">
+                <form class="btn-group" action="{{ url_for('ban_user', username=user.username) }}" method="post">
                     <button type="submit" class="btn btn-primary">Ban</button>
                 </form>
             </div>
@@ -141,7 +148,7 @@
         <label for="mac_address"></label>
         <input type="text" name="mac_address" placeholder="MAC Address"><br>
 
-        <button type="submit" class="btn btn-success">Add</button>
+        <button type="submit" class="btn btn-success m-1">Add</button>
     </form>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
