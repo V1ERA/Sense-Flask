@@ -11,7 +11,9 @@ import bcrypt
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '124551'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:V1era@172.17.0.5:3306/sense'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'static/avatars'
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
 

@@ -1,0 +1,6 @@
+flask_limiter
+flask
+flask_login
+flask_sqlalchemy
+bcrypt
+mysql-connector
