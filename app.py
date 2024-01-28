@@ -11,9 +11,7 @@ import bcrypt
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '124551'
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:V1era@172.17.0.5:3306/sense'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['UPLOAD_FOLDER'] = 'static/avatars'
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
 
@@ -362,7 +360,7 @@ def page_not_found(error):
 
 @app.route('/version')
 def version():
-    latest_version = '1.1'
+    latest_version = '1.2'
     download_url = 'https://sense.liara.run/download'
     
     return jsonify({
