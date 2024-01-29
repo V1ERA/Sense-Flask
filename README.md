@@ -1,1 +1,1 @@
-# Sense User Management System 💩
+# Sense User Management System
