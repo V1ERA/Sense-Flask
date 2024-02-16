@@ -1,17 +1,20 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, send_file, flash, session
+from flask import Flask, render_template, request, redirect, url_for, jsonify, send_file, flash, session, make_response
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import func
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.utils import secure_filename
+from email_validator import validate_email, EmailNotValidError
 import datetime
+import random
+import string
 import os
-import bcrypt
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '124551'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:V1era@172.17.0.5:3306/sense'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:124551@localhost:3306/sense'
 app.config['UPLOAD_FOLDER'] = 'static/avatars'
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
 
@@ -56,13 +59,6 @@ class User(db.Model):
         if self.register_date:
             return self.register_date.strftime('%Y/%m/%d %H:%M')
 
-
-    def set_password(self, password):
-        self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-
-    def check_password(self, password):
-        return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
-
 @login_manager.user_loader
 def load_user(user_id):
     try:
@@ -83,7 +79,24 @@ def update_last_online():
         current_user.last_online = datetime.datetime.now()
         db.session.commit()
 
+request_count = 0
+
+def count_requests(func):
+    def wrapper(*args, **kwargs):
+        global request_count
+        request_count += 1
+        return func(*args, **kwargs)
+    return wrapper
+
 @app.route('/')
+@count_requests
+def index():
+    if current_user.is_authenticated:
+        return redirect(url_for('userpanel'))
+    else:
+        return redirect(url_for('register'))
+
+@app.route('/adminpanel')
 @login_required
 def index():
     if current_user.role == 'Banned':
@@ -92,7 +105,7 @@ def index():
     if current_user.role != 'Administrator':
         return render_template('userpanel.html', user=current_user)
     users = User.query.all()
-    return render_template('index.html', users=users)
+    return render_template('admin.html', users=users)
 
 def generate_filename(user_id, filename):
     _, file_extension = os.path.splitext(filename)
@@ -103,15 +116,25 @@ def generate_filename(user_id, filename):
 def userpanel():
     if current_user.role == 'Banned':
         return render_template('banned.html')
-    
+
     users = User.query.all()
 
-    # Handle profile picture upload
     if request.method == 'POST':
+        if 'pfp' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+
         file = request.files['pfp']
+
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
 
         if file and allowed_file(file.filename):
             filename = generate_filename(current_user.id, secure_filename(file.filename))
+            
+            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
             current_user.profile_picture = filename
@@ -135,44 +158,77 @@ def user_profile(user_id):
     return render_template('users.html', user=viewed_user, current_user=current_user)
 
 @app.route('/register', methods=['POST', 'GET'])
-@limiter.limit("5 per minutes")
+@limiter.limit("3 per minutes")
 def register():
+    error = "Discord: https://discord.gg/gg8W2uFSqb"
+    registered_username = "Unknown"
+
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
         password = request.form['password']
+        ip_address = request.remote_addr
+
+        if session.get('registered_ip') == ip_address:
+            registered_username = session.get('registered_username')
+            error = f"Please login as {registered_username}, Multi-Accounting is NOT allowed."
+
+            return render_template('register.html', error=error, registered_username=registered_username)
 
         existing_user = User.query.filter_by(username=username).first()
         existing_email = User.query.filter_by(email=email).first()
         if existing_user or existing_email:
-            return render_template('register.html', error="Already taken")
+            return render_template('register.html', error="Already taken.")
+        
+        if len(password) < 8:
+            return render_template('register.html', error=f"Password must be at least 8 characters long.")
+        
+        if len(username) < 5:
+            return render_template('register.html', error=f"Username must be at least 5 characters long.")
+        
+        try:
+            validate_email(email)
+        except EmailNotValidError:
+            return render_template('register.html', error="Invalid email address.")
 
-        new_user = User(username=username, email=email, mac_address='Ask admin to set it for you.', role='Registered', register_date=datetime.datetime.now(), last_online=datetime.datetime.now(), is_banned=False, profile_picture='default.png')
-        new_user.set_password(password)
+        new_user = User(username=username, password=password, email=email, mac_address='Ask admin to set it for you.', role='Registered', register_date=datetime.datetime.now(), last_online=datetime.datetime.now(), is_banned=False, profile_picture='default.png')
 
         db.session.add(new_user)
 
         try:
             db.session.commit()
             login_user(new_user)
+            
+            session['registered_ip'] = ip_address
+            session['registered_username'] = username
+            
             return redirect(url_for('userpanel'))
         except IntegrityError:
             db.session.rollback()
             return render_template('register.html', error="Registration failed. Please try again.")
 
-    return render_template('register.html')
+    return render_template('register.html', error=error, registered_username=registered_username)
+
+
+
 
 @app.route('/login', methods=['POST', 'GET'])
-@limiter.limit("5 per minute")
+@limiter.limit("3 per minute")
 def login():
-    error = None
+    error = "Discord: https://discord.gg/gg8W2uFSqb"
+
+    if current_user.is_authenticated:
+        if current_user.role == 'Administrator':
+            return redirect(url_for('index'))
+        else:
+            return redirect(url_for('userpanel'))
 
     if request.method == 'POST':
-        username = request.form['username']
+        username = request.form['username'].lower()
         password = request.form['password']
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter(func.lower(User.username) == username).first()
 
-        if user and user.check_password(password):
+        if user and user.password == password:
             if user.is_banned:
                 error = "Your account has been banned."
             else:
@@ -182,17 +238,16 @@ def login():
                 else:
                     return redirect(url_for('userpanel'))
         else:
-            # Increment failed login attempt count in session
             session.setdefault('login_attempts', 0)
             session['login_attempts'] += 1
 
-            # Check if max login attempts exceeded
-            max_attempts = 5
+            max_attempts = 4
             if session['login_attempts'] >= max_attempts:
-                # Implement account lockout mechanism here
                 error = "Maximum login attempts exceeded."
+                print(f"Maximum login attempts exceeded for username: {username}")
             else:
                 error = "Invalid username or password."
+                print(f"Invalid login attempt for username: {username}")
 
     return render_template('login.html', error=error)
 
@@ -206,6 +261,7 @@ def ban_user(username):
     if user:
         user.role = 'Banned'
         user.is_banned = True
+        user.profile_picture = 'banned.png'
         db.session.commit()
     return redirect(url_for('index'))
 
@@ -248,6 +304,9 @@ def loginme():
 @app.route('/logout')
 @login_required
 def logout():
+    if current_user.role == 'Banned':
+        return redirect(url_for('userpanel'))
+
     logout_user()
     return redirect(url_for('login'))
 
@@ -262,8 +321,7 @@ def add_user():
     password = request.form['password']
     mac_address = request.form['mac_address']
 
-    new_user = User(username=username, email=email, password=password, mac_address=mac_address, register_date=datetime.datetime.now() ,last_online=datetime.datetime.now(), profile_picture='default.png')
-    new_user.set_password(password)
+    new_user = User(username=username, password=password, email=email, mac_address=mac_address, register_date=datetime.datetime.now() ,last_online=datetime.datetime.now(), profile_picture='default.png')
     db.session.add(new_user)
 
     try:
@@ -321,8 +379,6 @@ def set_role(username):
 @app.route('/status')
 @login_required
 def status():
-    if current_user.role == 'Banned':
-        return render_template('banned.html')
     
     uptime = datetime.datetime.now() - start_time
     return render_template('status.html', uptime=uptime, user=current_user)
@@ -374,5 +430,9 @@ def download():
     file_path = os.path.join('dl', 'Sense.exe')
     return send_file(file_path, as_attachment=True)
 
+@app.route('/stats')
+def stats():
+    return render_template('stats.html', request_count=request_count)
+
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', port=6969)

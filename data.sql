@@ -23,16 +23,16 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
-  `id` tinyint(255) DEFAULT NULL,
-  `username` varchar(255) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL, 
-  `password` varchar(255) DEFAULT NULL,
-  `mac_address` varchar(255) DEFAULT NULL,
-  `role` varchar(255) DEFAULT NULL,
-  `is_banned` tinyint(255) DEFAULT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL,
-  `register_date` varchar(255) DEFAULT NULL,
-  `last_online` varchar(255) DEFAULT NULL
+  `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `username` VARCHAR(255) NOT NULL UNIQUE,
+  `email` VARCHAR(255) NOT NULL UNIQUE,
+  `password` VARCHAR(255) NOT NULL,
+  `mac_address` VARCHAR(255),
+  `role` VARCHAR(255) DEFAULT 'User',
+  `is_banned` TINYINT(1) DEFAULT 0,
+  `profile_picture` VARCHAR(255) DEFAULT 'default.png',
+  `register_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `last_online` DATETIME
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -42,7 +42,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Admin','v1era@proton.me','$2b$12$zczsHM2.KxEQB8XEcl5OEeulNShIwAEoKKxeDgjE5IrNkeHanheiu','Ask admin to set it for you.','Administrator',0,'default.png','2024-01-28','2024-01-28');
+INSERT INTO `user` VALUES (1,'Admin','v1era@proton.me','124551','2b:57:ae:5d:ba:74','Administrator',0,'avatar_1.png','2024-01-28','2024-01-28');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
