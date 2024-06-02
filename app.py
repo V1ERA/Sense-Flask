@@ -13,7 +13,7 @@ import string
 import os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '124551'
+app.config['SECRET_KEY'] = 'Admin!123'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:124551@localhost:3306/sense'
 app.config['UPLOAD_FOLDER'] = 'static/avatars'
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
