@@ -42,7 +42,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Admin','v1era@proton.me','124551','2b:57:ae:5d:ba:74','Administrator',0,'avatar_1.png','2024-01-28','2024-01-28');
+INSERT INTO `user` VALUES (1,'Admin','Admin@example.com','Admin!123','2b:57:ae:5d:ba:74','Administrator',0,'avatar_1.png','2024-01-28','2024-01-28');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
